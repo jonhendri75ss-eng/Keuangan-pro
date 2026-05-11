@@ -3,9 +3,18 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Menteri Keuangan - Offline</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Menteri Keuanganku</title>
     
+    <!-- PWA Meta Tags agar menjadi Aplikasi Asli (Bukan sekedar Shortcut) -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#4f46e5">
+    
+    <!-- Web Manifest (Inline) -->
+    <link rel="manifest" href="data:application/json;base64,ewogICJkZWZhdWx0X2xvY2FsZSI6ICJpZCIsCiAgIm5hbWUiOiAiTWVudGVyaSBLZXVhbmdhbmt1IiwKICAic2hvcnRfbmFtZSI6ICJNZW50ZXJpS3UiLAogICJzdGFydF91cmwiOiAiLiIsCiAgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsCiAgImJhY2tncm91bmRfY29sb3IiOiAiIzRmNDZlNSIsCiAgInRoZW1lX2NvbG9yIjogIiM0ZjQ2ZTUiLAogICJpY29ucyI6IFsKICAgIHsKICAgICAgInNyYyI6ICJodHRwczovL2Nkbi1pY29ucy1wbmcuZmxhdGljb24uY29tLzUxMi8yNjg5LzI2ODk0MTIucG5nIiwKICAgICAgInNpemVzIjogIjUxMng1MTIiLAogICAgICAidHlwZSI6ICJpbWFnZS9wbmciCiAgICB9CiAgXQp9">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -25,382 +34,344 @@
         }
     </script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; transition: background-color 0.3s ease; }
-        
-        @keyframes screen-red-alert {
-            0% { background-color: inherit; }
-            50% { background-color: rgba(225, 29, 72, 0.2); }
-            100% { background-color: inherit; }
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+        body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
         .panic-mode { animation: screen-red-alert 0.8s infinite !important; }
-        
-        .card-glass { backdrop-filter: blur(10px); }
+        @keyframes screen-red-alert {
+            0%, 100% { background-color: inherit; }
+            50% { background-color: rgba(225, 29, 72, 0.15); }
+        }
     </style>
 </head>
-<body id="app-body" class="bg-slate-50 dark:bg-darkBg min-h-screen pb-20 text-slate-900 dark:text-slate-100">
+<body id="app-body" class="bg-slate-50 dark:bg-darkBg min-h-screen pb-24 text-slate-900 dark:text-slate-100 transition-colors duration-300">
 
     <!-- Header -->
-    <header class="sticky top-0 z-50 bg-white/80 dark:bg-darkCard/80 border-b border-slate-200 dark:border-darkBorder backdrop-blur-md">
-        <div class="max-w-xl mx-auto px-4 h-16 flex items-center justify-between">
-            <div class="flex items-center gap-2">
-                <div class="bg-indigo-600 p-2 rounded-lg text-white shadow-lg shadow-indigo-500/30">
-                    <i data-lucide="shield-check"></i>
+    <header class="sticky top-0 z-50 bg-white/90 dark:bg-darkCard/90 border-b border-slate-200 dark:border-darkBorder backdrop-blur-xl">
+        <div class="max-w-xl mx-auto px-5 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="bg-indigo-600 p-2 rounded-xl text-white shadow-lg shadow-indigo-500/40">
+                    <i data-lucide="shield-check" class="w-5 h-5"></i>
                 </div>
-                <h1 class="text-lg font-bold tracking-tight uppercase">Menteri <span class="text-indigo-600">Keuanganku</span></h1>
+                <div>
+                    <h1 class="text-sm font-extrabold uppercase tracking-tight leading-none text-slate-500 dark:text-slate-400">Menteri</h1>
+                    <h1 class="text-lg font-black uppercase tracking-tighter leading-none text-indigo-600 dark:text-indigo-400">Keuanganku</h1>
+                </div>
             </div>
-            <div class="flex items-center gap-2">
-                <button onclick="toggleAudio()" id="audio-btn" class="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition-all text-slate-400">
+            <div class="flex items-center gap-1">
+                <button onclick="toggleAudio()" id="audio-btn" class="p-2.5 rounded-xl transition-all text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">
                     <i data-lucide="volume-x" id="audio-icon" class="w-5 h-5"></i>
                 </button>
-                <button onclick="toggleTheme()" class="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition-all">
+                <button onclick="toggleTheme()" class="p-2.5 rounded-xl transition-all text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">
                     <i data-lucide="sun" id="sun-icon" class="w-5 h-5 hidden dark:block text-amber-400"></i>
-                    <i data-lucide="moon" id="moon-icon" class="w-5 h-5 block dark:hidden text-slate-600"></i>
+                    <i data-lucide="moon" id="moon-icon" class="w-5 h-5 block dark:hidden"></i>
                 </button>
             </div>
         </div>
     </header>
 
-    <main class="max-w-xl mx-auto px-4 mt-6 space-y-6">
+    <main class="max-w-xl mx-auto px-5 mt-6 space-y-6">
         
-        <!-- Notifikasi Khusus -->
-        <div id="notif-container" class="space-y-3">
-            <div id="panic-alert" class="hidden bg-rose-600 text-white p-4 rounded-2xl shadow-lg flex items-center gap-3">
+        <!-- Alerts Area -->
+        <div id="notif-area" class="space-y-3">
+            <div id="panic-alert" class="hidden bg-rose-600 text-white p-4 rounded-2xl shadow-xl flex items-center gap-3">
                 <i data-lucide="skull" class="animate-pulse"></i>
-                <p class="text-xs font-bold uppercase tracking-tight">Krisis! Saldo Anda Negatif!</p>
+                <p class="text-[10px] font-black uppercase tracking-widest">Krisis Finansial! Saldo Negatif!</p>
             </div>
-            <div id="debt-danger-alert" class="hidden bg-orange-600 text-white p-4 rounded-2xl shadow-lg flex items-center gap-3">
-                <i data-lucide="alert-octagon" class="animate-bounce"></i>
-                <p class="text-xs font-bold uppercase tracking-tight">Ekonomi Goyang! Hutang orang lain terlalu tinggi!</p>
+            <div id="leak-alert" class="hidden bg-red-500 text-white p-4 rounded-2xl shadow-xl flex items-center gap-3 animate-bounce">
+                <i data-lucide="droplets"></i>
+                <p class="text-[10px] font-black uppercase tracking-widest">Kebocoran Dana Terdeteksi!</p>
             </div>
-            <div id="bird-alert" class="hidden bg-emerald-600 text-white p-4 rounded-2xl shadow-lg flex items-center gap-3">
+            <div id="debt-danger-alert" class="hidden bg-orange-600 text-white p-4 rounded-2xl shadow-xl flex items-center gap-3">
+                <i data-lucide="alert-triangle"></i>
+                <p class="text-[10px] font-black uppercase tracking-widest">Ekonomi Goyang! Piutang Terlalu Tinggi!</p>
+            </div>
+            <div id="bird-alert" class="hidden bg-emerald-600 text-white p-4 rounded-2xl shadow-xl flex items-center gap-3">
                 <i data-lucide="twitter"></i>
-                <p class="text-xs font-bold uppercase tracking-tight">Saldo Aman. Menikmati Ketenangan.</p>
+                <p class="text-[10px] font-black uppercase tracking-widest">Saldo Sehat. Cuan Melimpah.</p>
             </div>
         </div>
 
-        <!-- Dashboard Cards -->
-        <div class="grid grid-cols-2 gap-3">
-            <div id="balance-card" class="col-span-2 bg-indigo-600 p-6 rounded-3xl text-white shadow-xl transition-all duration-500">
-                <p class="text-[10px] font-bold opacity-70 uppercase tracking-widest">Saldo Saat Ini (Tunai)</p>
-                <p id="balance-text" class="text-3xl font-black">Rp 0</p>
+        <!-- Dashboard -->
+        <div id="balance-card" class="bg-indigo-600 p-8 rounded-[2.5rem] text-white shadow-2xl shadow-indigo-500/30 transition-all duration-700 relative overflow-hidden">
+            <div class="relative z-10">
+                <p class="text-[10px] font-bold opacity-60 uppercase tracking-[0.2em] mb-1">Saldo Saat Ini (Tunai)</p>
+                <p id="balance-text" class="text-4xl font-black tracking-tighter">Rp 0</p>
             </div>
-            <div class="bg-white dark:bg-darkCard p-4 rounded-3xl border border-slate-200 dark:border-darkBorder shadow-sm">
-                <p class="text-[10px] font-bold text-slate-400 uppercase">Piutang (Hutang Orang)</p>
-                <p id="debt-text" class="text-lg font-bold text-orange-500">Rp 0</p>
-            </div>
-            <div class="bg-white dark:bg-darkCard p-4 rounded-3xl border border-slate-200 dark:border-darkBorder shadow-sm">
-                <p class="text-[10px] font-bold text-slate-400 uppercase">Total Keluar</p>
-                <p id="expense-text" class="text-lg font-bold text-rose-500">Rp 0</p>
+            <div class="absolute -right-10 -bottom-10 opacity-10">
+                <i data-lucide="wallet" class="w-40 h-40"></i>
             </div>
         </div>
 
-        <!-- Input Form -->
-        <section class="bg-white dark:bg-darkCard p-6 rounded-3xl shadow-sm border border-slate-200 dark:border-darkBorder space-y-4">
-            <input type="text" id="desc" placeholder="Keterangan / Nama Peminjam..." class="w-full bg-slate-100 dark:bg-slate-800 border-none rounded-2xl px-4 py-3 outline-none focus:ring-2 focus:ring-indigo-500 transition-all">
+        <div class="grid grid-cols-2 gap-4">
+            <div class="bg-white dark:bg-darkCard p-5 rounded-[2rem] border border-slate-100 dark:border-darkBorder shadow-sm">
+                <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Piutang</p>
+                <p id="debt-text" class="text-xl font-bold text-orange-500">Rp 0</p>
+            </div>
+            <div class="bg-white dark:bg-darkCard p-5 rounded-[2rem] border border-slate-100 dark:border-darkBorder shadow-sm">
+                <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Total Keluar</p>
+                <p id="expense-text" class="text-xl font-bold text-rose-500">Rp 0</p>
+            </div>
+        </div>
+
+        <!-- Form Input -->
+        <section class="bg-white dark:bg-darkCard p-6 rounded-[2.5rem] border border-slate-100 dark:border-darkBorder shadow-sm space-y-4">
+            <input type="text" id="desc" placeholder="Keterangan transaksi..." class="w-full bg-slate-50 dark:bg-slate-800/50 border-none rounded-2xl px-5 py-4 outline-none focus:ring-2 focus:ring-indigo-500 font-medium">
+            
             <div class="grid grid-cols-2 gap-3">
-                <select id="type" onchange="toggleDebtDate()" class="bg-slate-100 dark:bg-slate-800 rounded-2xl px-4 py-3 text-xs font-bold outline-none cursor-pointer">
+                <select id="type" onchange="checkDebtMode()" class="bg-slate-50 dark:bg-slate-800/50 rounded-2xl px-4 py-4 text-xs font-bold outline-none border-none cursor-pointer">
                     <option value="expense">PENGELUARAN</option>
                     <option value="income">PENDAPATAN</option>
                     <option value="debt">HUTANG (PIUTANG)</option>
                 </select>
-                <select id="cat" class="bg-slate-100 dark:bg-slate-800 rounded-2xl px-4 py-3 text-xs font-bold outline-none cursor-pointer">
+                <select id="cat" class="bg-slate-50 dark:bg-slate-800/50 rounded-2xl px-4 py-4 text-xs font-bold outline-none border-none cursor-pointer">
                     <option value="Wajib">WAJIB</option>
-                    <option value="Hiburan">HIBURAN</option>
                     <option value="Makan">MAKAN</option>
+                    <option value="Hiburan">HIBURAN</option>
                     <option value="Lainnya">LAINNYA</option>
                 </select>
             </div>
-            <div id="due-date-container" class="hidden">
-                <p class="text-[10px] font-bold text-slate-400 mb-1 ml-1 uppercase tracking-wider">Tanggal Jatuh Tempo Penagihan:</p>
-                <input type="date" id="due-date" class="w-full bg-slate-100 dark:bg-slate-800 border-none rounded-2xl px-4 py-3 outline-none text-xs font-bold">
+
+            <div id="debt-date-box" class="hidden">
+                <p class="text-[9px] font-bold text-slate-400 ml-2 mb-1 uppercase">Tanggal Penagihan:</p>
+                <input type="date" id="due-date" class="w-full bg-slate-50 dark:bg-slate-800/50 rounded-2xl px-5 py-4 text-xs font-bold outline-none border-none">
             </div>
-            <input type="number" id="amt" placeholder="Nominal Rp" class="w-full bg-slate-100 dark:bg-slate-800 rounded-2xl px-4 py-3 text-xl font-black text-indigo-500 outline-none">
-            <button onclick="saveData()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-black py-4 rounded-2xl shadow-lg shadow-indigo-500/20 active:scale-95 transition-all uppercase tracking-widest">Simpan ke Memori</button>
+
+            <input type="number" id="amt" placeholder="Nominal Rp" class="w-full bg-slate-50 dark:bg-slate-800/50 rounded-2xl px-5 py-4 text-2xl font-black text-indigo-600 outline-none placeholder:text-slate-300">
+            
+            <button onclick="saveTx()" class="w-full bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-black py-5 rounded-2xl shadow-xl shadow-indigo-500/20 transition-all uppercase tracking-widest text-sm">Simpan Transaksi</button>
         </section>
 
-        <!-- Pengingat Penagih Utang -->
-        <div id="debt-reminder-card" class="hidden bg-amber-50 dark:bg-amber-900/20 p-5 rounded-3xl border border-amber-200 dark:border-amber-800/50">
-            <h3 class="text-[10px] font-black text-amber-600 dark:text-amber-400 uppercase tracking-widest mb-3 flex items-center gap-2">
-                <i data-lucide="bell-ring" class="w-3 h-3"></i> Daftar Penagihan Aktif
-            </h3>
+        <!-- Debt Reminders -->
+        <div id="debt-reminder" class="hidden bg-amber-50 dark:bg-amber-900/10 p-6 rounded-[2.5rem] border border-amber-100 dark:border-amber-900/30">
+            <div class="flex items-center gap-2 mb-4">
+                <i data-lucide="bell-dot" class="w-4 h-4 text-amber-600"></i>
+                <h3 class="text-[10px] font-black text-amber-600 uppercase tracking-widest">Daftar Penagihan Aktif</h3>
+            </div>
             <div id="debt-list" class="space-y-3"></div>
         </div>
 
         <!-- Charts -->
-        <div class="bg-white dark:bg-darkCard p-6 rounded-3xl border border-slate-200 dark:border-darkBorder shadow-sm">
-            <h3 class="text-xs font-bold text-slate-400 uppercase mb-4 tracking-widest">Analisis Kategori</h3>
-            <div class="h-48 mb-6">
-                <canvas id="mainChart"></canvas>
+        <div class="bg-white dark:bg-darkCard p-8 rounded-[2.5rem] border border-slate-100 dark:border-darkBorder shadow-sm">
+            <div class="h-56 relative mb-8">
+                <canvas id="chartCanvas"></canvas>
             </div>
-            <div id="percent-list" class="space-y-3"></div>
-        </div>
-
-        <!-- Tools (Full Offline) -->
-        <div class="grid grid-cols-2 gap-3">
-            <button onclick="exportJSON()" class="flex items-center justify-center gap-2 bg-slate-800 text-white p-4 rounded-2xl text-xs font-bold hover:bg-slate-700 transition-all shadow-lg">
-                <i data-lucide="download" class="w-4 h-4"></i> BACKUP DATA
-            </button>
-            <label class="flex items-center justify-center gap-2 bg-slate-200 dark:bg-slate-700 p-4 rounded-2xl text-xs font-bold cursor-pointer hover:opacity-80 transition-all">
-                <i data-lucide="upload" class="w-4 h-4"></i> IMPORT DATA
-                <input type="file" id="importFile" class="hidden" accept=".json" onchange="importJSON(this)">
-            </label>
+            <div id="stats-list" class="space-y-4"></div>
         </div>
 
         <!-- History -->
-        <div class="bg-white dark:bg-darkCard rounded-3xl border border-slate-200 dark:border-darkBorder overflow-hidden shadow-sm">
-            <div class="p-4 border-b dark:border-darkBorder flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/50">
-                <p class="text-xs font-bold uppercase text-slate-400 tracking-widest">Riwayat Lokal</p>
-                <button onclick="clearAll()" class="text-[10px] text-rose-500 font-bold uppercase hover:underline">Hapus Semua</button>
+        <div class="bg-white dark:bg-darkCard rounded-[2.5rem] border border-slate-100 dark:border-darkBorder overflow-hidden shadow-sm">
+            <div class="p-6 border-b dark:border-darkBorder flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/50">
+                <p class="text-[10px] font-black uppercase text-slate-400 tracking-widest">Riwayat Lokal</p>
+                <button onclick="hapusSemua()" class="text-[9px] font-black text-rose-500 uppercase tracking-widest">Reset Data</button>
             </div>
-            <div id="tx-list" class="divide-y dark:divide-darkBorder"></div>
+            <div id="tx-history" class="divide-y dark:divide-darkBorder"></div>
+        </div>
+
+        <!-- Export/Import -->
+        <div class="grid grid-cols-2 gap-4">
+            <button onclick="exportData()" class="bg-slate-900 text-white p-4 rounded-2xl text-[10px] font-black tracking-widest uppercase">Export JSON</button>
+            <label class="bg-slate-200 dark:bg-slate-800 p-4 rounded-2xl text-[10px] font-black tracking-widest uppercase text-center cursor-pointer">
+                Import JSON
+                <input type="file" class="hidden" accept=".json" onchange="importData(this)">
+            </label>
         </div>
 
     </main>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('sov_finance_v1')) || [];
-        let isDark = localStorage.getItem('theme') === 'dark';
-        let audioEnabled = false;
+        let db = JSON.parse(localStorage.getItem('menteri_db_v2')) || [];
+        let audioOn = false;
         let audioCtx = null;
-        let soundLoop = null;
-        let mainChart = null;
+        let loopId = null;
+        let chart = null;
 
         function init() {
-            if (isDark) document.documentElement.classList.add('dark');
-            updateUI();
+            if (localStorage.getItem('theme') === 'dark') document.documentElement.classList.add('dark');
+            refresh();
             lucide.createIcons();
         }
 
         function toggleTheme() {
-            isDark = !isDark;
-            document.documentElement.classList.toggle('dark');
+            const isDark = document.documentElement.classList.toggle('dark');
             localStorage.setItem('theme', isDark ? 'dark' : 'light');
-            updateUI();
+            refresh();
         }
 
-        function toggleDebtDate() {
-            const type = document.getElementById('type').value;
-            document.getElementById('due-date-container').classList.toggle('hidden', type !== 'debt');
+        function checkDebtMode() {
+            document.getElementById('debt-date-box').classList.toggle('hidden', document.getElementById('type').value !== 'debt');
         }
 
         async function toggleAudio() {
-            audioEnabled = !audioEnabled;
-            const btn = document.getElementById('audio-btn');
+            audioOn = !audioOn;
             const icon = document.getElementById('audio-icon');
-            
-            if (audioEnabled) {
+            if (audioOn) {
                 if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 if (audioCtx.state === 'suspended') await audioCtx.resume();
-                btn.classList.add('text-indigo-500');
                 icon.setAttribute('data-lucide', 'volume-2');
             } else {
-                btn.classList.remove('text-indigo-500');
                 icon.setAttribute('data-lucide', 'volume-x');
                 stopSound();
             }
             lucide.createIcons();
-            updateUI();
+            refresh();
         }
 
         function playPanic() {
-            if (!audioEnabled || !audioCtx) return;
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.type = 'square';
-            osc.frequency.setValueAtTime(440, audioCtx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.1);
-            gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.2);
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            osc.start(); osc.stop(audioCtx.currentTime + 0.2);
+            if (!audioOn || !audioCtx) return;
+            const o = audioCtx.createOscillator();
+            const g = audioCtx.createGain();
+            o.type = 'square'; o.frequency.setValueAtTime(440, audioCtx.currentTime);
+            o.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.1);
+            g.gain.setValueAtTime(0.05, audioCtx.currentTime);
+            g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.2);
+            o.connect(g); g.connect(audioCtx.destination);
+            o.start(); o.stop(audioCtx.currentTime + 0.2);
         }
 
         function playBird() {
-            if (!audioEnabled || !audioCtx) return;
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.type = 'sine';
-            const f = 2000 + Math.random() * 1000;
-            osc.frequency.setValueAtTime(f, audioCtx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(f + 500, audioCtx.currentTime + 0.05);
-            gain.gain.setValueAtTime(0.03, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            osc.start(); osc.stop(audioCtx.currentTime + 0.3);
+            if (!audioOn || !audioCtx) return;
+            const o = audioCtx.createOscillator();
+            const g = audioCtx.createGain();
+            o.type = 'sine'; o.frequency.setValueAtTime(2000 + Math.random()*500, audioCtx.currentTime);
+            g.gain.setValueAtTime(0.02, audioCtx.currentTime);
+            o.connect(g); g.connect(audioCtx.destination);
+            o.start(); o.stop(audioCtx.currentTime + 0.1);
         }
 
-        function stopSound() {
-            if (soundLoop) clearInterval(soundLoop);
-            soundLoop = null;
-        }
+        function stopSound() { clearInterval(loopId); loopId = null; }
 
-        function saveData() {
+        function saveTx() {
             const desc = document.getElementById('desc').value;
             const amt = parseFloat(document.getElementById('amt').value);
             const type = document.getElementById('type').value;
             const cat = document.getElementById('cat').value;
-            const dueDate = document.getElementById('due-date').value;
+            const due = document.getElementById('due-date').value;
 
             if (!desc || isNaN(amt)) return;
 
-            db.unshift({ 
-                id: Date.now(), 
-                desc, amt, type, cat, 
-                dueDate: type === 'debt' ? dueDate : null,
-                date: new Date().toLocaleDateString('id-ID'),
-                timestamp: Date.now()
-            });
+            db.unshift({ id: Date.now(), desc, amt, type, cat, due, date: new Date().toLocaleDateString('id-ID') });
+            localStorage.setItem('menteri_db_v2', JSON.stringify(db));
             
-            localStorage.setItem('sov_finance_v1', JSON.stringify(db));
-            
-            document.getElementById('desc').value = '';
+            document.getElementById('desc').value = ''; 
             document.getElementById('amt').value = '';
-            document.getElementById('due-date').value = '';
-            updateUI();
+            refresh();
         }
 
-        function deleteItem(id) {
-            db = db.filter(item => item.id !== id);
-            localStorage.setItem('sov_finance_v1', JSON.stringify(db));
-            updateUI();
+        function hapusItem(id) {
+            db = db.filter(x => x.id !== id);
+            localStorage.setItem('menteri_db_v2', JSON.stringify(db));
+            refresh();
         }
 
-        function clearAll() {
-            if (confirm("Hapus seluruh data di HP ini? (Pastikan sudah backup jika data penting)")) {
-                db = [];
-                localStorage.removeItem('sov_finance_v1');
-                updateUI();
+        function hapusSemua() {
+            if (confirm("Hapus semua data finansial di HP ini?")) {
+                db = []; localStorage.removeItem('menteri_db_v2'); refresh();
             }
         }
 
-        function exportJSON() {
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db));
-            const dl = document.createElement('a');
-            dl.setAttribute("href", dataStr);
-            dl.setAttribute("download", "menteri_keuangan_backup_" + Date.now() + ".json");
-            dl.click();
+        function exportData() {
+            const b = new Blob([JSON.stringify(db)], {type:"application/json"});
+            const u = URL.createObjectURL(b);
+            const a = document.createElement('a'); a.href = u; a.download = `backup_menteri_${Date.now()}.json`; a.click();
         }
 
-        function importJSON(input) {
-            const file = input.files[0];
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    db = JSON.parse(e.target.result);
-                    localStorage.setItem('sov_finance_v1', JSON.stringify(db));
-                    updateUI();
-                } catch (err) { alert("File tidak valid!"); }
-            };
-            reader.readAsText(file);
+        function importData(inp) {
+            const r = new FileReader();
+            r.onload = (e) => { db = JSON.parse(e.target.result); localStorage.setItem('menteri_db_v2', JSON.stringify(db)); refresh(); };
+            r.readAsText(inp.files[0]);
         }
 
-        function updateUI() {
-            let bal = 0, inc = 0, exp = 0, totalDebt = 0;
-            const cats = { Wajib: 0, Hiburan: 0, Makan: 0, Lainnya: 0 };
-            const list = document.getElementById('tx-list');
-            const percList = document.getElementById('percent-list');
-            const debtList = document.getElementById('debt-list');
-            
-            list.innerHTML = '';
-            percList.innerHTML = '';
-            debtList.innerHTML = '';
+        function refresh() {
+            let saldo = 0, piutang = 0, keluar = 0;
+            const cats = { Wajib: 0, Makan: 0, Hiburan: 0, Lainnya: 0 };
 
             db.forEach(t => {
-                if (t.type === 'income') { bal += t.amt; inc += t.amt; }
-                else if (t.type === 'expense') { bal -= t.amt; exp += t.amt; cats[t.cat] += t.amt; }
-                else if (t.type === 'debt') { totalDebt += t.amt; }
+                if (t.type === 'income') saldo += t.amt;
+                else if (t.type === 'expense') { saldo -= t.amt; keluar += t.amt; cats[t.cat] += t.amt; }
+                else if (t.type === 'debt') piutang += t.amt;
             });
 
+            // UI Elements
             const body = document.getElementById('app-body');
-            const panicA = document.getElementById('panic-alert');
-            const debtA = document.getElementById('debt-danger-alert');
-            const birdA = document.getElementById('bird-alert');
             const card = document.getElementById('balance-card');
-            const reminderCard = document.getElementById('debt-reminder-card');
+            const pAlert = document.getElementById('panic-alert');
+            const lAlert = document.getElementById('leak-alert');
+            const dAlert = document.getElementById('debt-danger-alert');
+            const bAlert = document.getElementById('bird-alert');
 
+            // Reset States
             stopSound();
             body.classList.remove('panic-mode');
-            [panicA, debtA, birdA].forEach(a => a.classList.add('hidden'));
-            card.className = "col-span-2 p-6 rounded-3xl text-white shadow-xl transition-all duration-500 ";
+            [pAlert, lAlert, dAlert, bAlert].forEach(el => el.classList.add('hidden'));
+            card.classList.replace('bg-rose-600', 'bg-indigo-600');
+            card.classList.replace('bg-emerald-600', 'bg-indigo-600');
 
-            if (bal < 0) {
-                body.classList.add('panic-mode');
-                panicA.classList.remove('hidden');
-                card.classList.add('bg-rose-600');
-                if (audioEnabled) soundLoop = setInterval(playPanic, 800);
+            // Logic Notifications
+            if (saldo < 0) {
+                body.classList.add('panic-mode'); pAlert.classList.remove('hidden');
+                card.classList.replace('bg-indigo-600', 'bg-rose-600');
+                if (audioOn) loopId = setInterval(playPanic, 800);
             } else {
-                if (totalDebt > bal && totalDebt > 0) {
-                    debtA.classList.remove('hidden');
-                }
-                if (bal >= 1000000) {
-                    birdA.classList.remove('hidden');
-                    card.classList.add('bg-emerald-600');
-                    if (audioEnabled) soundLoop = setInterval(playBird, 3000);
-                } else {
-                    card.classList.add('bg-indigo-600');
+                if (cats['Lainnya'] > (keluar * 0.4) && keluar > 0) lAlert.classList.remove('hidden');
+                if (piutang > saldo && piutang > 0) dAlert.classList.remove('hidden');
+                if (saldo >= 1000000) {
+                    bAlert.classList.remove('hidden');
+                    card.classList.replace('bg-indigo-600', 'bg-emerald-600');
+                    if (audioOn) loopId = setInterval(playBird, 3000);
                 }
             }
 
-            document.getElementById('balance-text').innerText = `Rp ${bal.toLocaleString('id-ID')}`;
-            document.getElementById('debt-text').innerText = `Rp ${totalDebt.toLocaleString('id-ID')}`;
-            document.getElementById('expense-text').innerText = `Rp ${exp.toLocaleString('id-ID')}`;
+            // Update Numbers
+            document.getElementById('balance-text').innerText = `Rp ${saldo.toLocaleString('id-ID')}`;
+            document.getElementById('debt-text').innerText = `Rp ${piutang.toLocaleString('id-ID')}`;
+            document.getElementById('expense-text').innerText = `Rp ${keluar.toLocaleString('id-ID')}`;
 
+            // Debt Reminders
+            const rBox = document.getElementById('debt-reminder');
+            const rList = document.getElementById('debt-list');
+            rList.innerHTML = '';
             const activeDebts = db.filter(t => t.type === 'debt');
-            reminderCard.classList.toggle('hidden', activeDebts.length === 0);
+            rBox.classList.toggle('hidden', activeDebts.length === 0);
             activeDebts.forEach(t => {
-                const row = document.createElement('div');
-                row.className = "flex justify-between items-center text-xs";
-                row.innerHTML = `
-                    <div class="flex flex-col">
-                        <span class="font-black dark:text-amber-200">${t.desc}</span>
-                        <span class="text-[9px] opacity-60 font-bold uppercase">Jatuh Tempo: ${t.dueDate || 'Sesuai Kesepakatan'}</span>
-                    </div>
-                    <div class="font-black text-amber-600">Rp ${t.amt.toLocaleString('id-ID')}</div>
-                `;
-                debtList.appendChild(row);
+                rList.innerHTML += `<div class="flex justify-between items-center text-xs font-bold">
+                    <div class="flex flex-col"><span>${t.desc}</span><span class="text-[8px] opacity-50 uppercase">Tempo: ${t.due || '-'}</span></div>
+                    <span class="text-amber-600">Rp ${t.amt.toLocaleString('id-ID')}</span>
+                </div>`;
             });
 
-            Object.entries(cats).forEach(([cat, val]) => {
-                const p = exp > 0 ? (val / exp * 100).toFixed(1) : 0;
-                const div = document.createElement('div');
-                div.innerHTML = `
-                    <div class="flex justify-between text-[10px] font-black uppercase mb-1">
-                        <span>${cat}</span><span>${p}%</span>
+            // Stats List
+            const sList = document.getElementById('stats-list');
+            sList.innerHTML = '';
+            Object.entries(cats).forEach(([c, v]) => {
+                const p = keluar > 0 ? (v / keluar * 100).toFixed(1) : 0;
+                sList.innerHTML += `<div>
+                    <div class="flex justify-between text-[10px] font-black uppercase mb-1.5"><span>${c}</span><span>${p}%</span></div>
+                    <div class="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
+                        <div class="bg-indigo-500 h-full transition-all duration-1000" style="width: ${p}%"></div>
                     </div>
-                    <div class="w-full bg-slate-200 dark:bg-slate-700 h-1.5 rounded-full overflow-hidden">
-                        <div class="h-full bg-indigo-500" style="width: ${p}%"></div>
-                    </div>
-                `;
-                percList.appendChild(div);
+                </div>`;
             });
 
+            // History
+            const hList = document.getElementById('tx-history');
+            hList.innerHTML = '';
             db.slice(0, 15).forEach(t => {
-                const d = document.createElement('div');
-                d.className = "p-4 flex justify-between items-center bg-white/5";
-                let color = t.type === 'income' ? 'emerald' : (t.type === 'expense' ? 'rose' : 'orange');
-                let icon = t.type === 'income' ? 'arrow-up-right' : (t.type === 'expense' ? 'arrow-down-right' : 'user-plus');
-                
-                d.innerHTML = `
-                    <div class="flex items-center gap-3">
-                        <div class="p-2 rounded-xl bg-${color}-500/10 text-${color}-500">
-                            <i data-lucide="${icon}" class="w-4 h-4"></i>
+                const color = t.type === 'income' ? 'text-emerald-500' : (t.type === 'expense' ? 'text-rose-500' : 'text-orange-500');
+                hList.innerHTML += `<div class="p-5 flex justify-between items-center group">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-2xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center">
+                            <i data-lucide="${t.type === 'income' ? 'trending-up' : (t.type === 'expense' ? 'trending-down' : 'user')}" class="w-4 h-4 text-slate-400"></i>
                         </div>
                         <div>
                             <p class="text-sm font-bold">${t.desc}</p>
-                            <p class="text-[9px] font-bold opacity-50 uppercase">${t.type === 'debt' ? 'PIUTANG' : t.cat} • ${t.date}</p>
+                            <p class="text-[9px] font-black opacity-40 uppercase">${t.cat} • ${t.date}</p>
                         </div>
                     </div>
                     <div class="flex items-center gap-4">
-                        <p class="font-black text-${color}-500">
-                            ${t.amt.toLocaleString('id-ID')}
-                        </p>
-                        <button onclick="deleteItem(${t.id})" class="text-slate-400 hover:text-rose-500 transition-colors"><i data-lucide="x" class="w-4 h-4"></i></button>
+                        <p class="text-sm font-black ${color}">${t.amt.toLocaleString('id-ID')}</p>
+                        <button onclick="hapusItem(${t.id})" class="text-slate-300 hover:text-rose-500 transition-colors"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                     </div>
-                `;
-                list.appendChild(d);
+                </div>`;
             });
 
             renderChart(cats);
@@ -408,20 +379,22 @@
         }
 
         function renderChart(data) {
-            const ctx = document.getElementById('mainChart').getContext('2d');
-            if (mainChart) mainChart.destroy();
-            mainChart = new Chart(ctx, {
+            const ctx = document.getElementById('chartCanvas').getContext('2d');
+            if (chart) chart.destroy();
+            chart = new Chart(ctx, {
                 type: 'doughnut',
                 data: {
                     labels: Object.keys(data),
                     datasets: [{
                         data: Object.values(data),
-                        backgroundColor: ['#6366f1', '#f59e0b', '#10b981', '#ef4444'],
-                        borderWidth: 0
+                        backgroundColor: ['#4f46e5', '#f59e0b', '#10b981', '#ef4444'],
+                        borderWidth: 0,
+                        hoverOffset: 10
                     }]
                 },
                 options: {
                     maintainAspectRatio: false,
+                    cutout: '80%',
                     plugins: { legend: { display: false } }
                 }
             });
